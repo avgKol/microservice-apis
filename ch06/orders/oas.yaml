@@ -1,232 +1,397 @@
+# This is a YAML file for defining the OpenAPI version 3.0.3 specification.
+
 openapi: 3.0.3
 
+# Information about the API is defined under the `info` section.
 info:
+  # The title of the API.
   title: Orders API
+
+  # A brief description of the API.
   description: API that allows you to manage orders for CoffeeMesh
+
+  # The version number of the API.
   version: 1.0.0
 
+# Information about the servers hosting the API is defined under the `servers` section.
 servers:
-  - url: http://localhost:8000
-    description: local development server
-  - url: https://coffeemesh.com
-    description: main production server
-  - url: https://coffeemesh-staging.com
-    description: staging server for testing purposes only
+# The URL of the main production server.
+- url: https://coffeemesh.com
 
+  # A brief description of the main production server.
+  description: main production server
+
+# The URL of the staging server for testing purposes only.
+- url: https://coffeemesh-staging.com
+
+  # A brief description of the staging server for testing purposes only.
+  description: staging server for testing purposes only
+
+# This is a YAML file for defining the OpenAPI version 3.0.3 specification.
+
+# The `paths` section defines the endpoints of the API.
 paths:
+  # The `/orders` endpoint allows to manage orders related functionality.
   /orders:
+    # The `get` method allows you to retrieve a list of orders.
     get:
+      # The `parameters` section describes the query parameters that can be used to filter results.
       parameters:
+      # The `cancelled` parameter is optional and allows you to filter orders by their cancellation status.
       - name: cancelled
         in: query
         required: false
         schema:
           type: boolean
+
+      # The `limit` parameter is optional and allows you to limit the number of orders returned.
       - name: limit
         in: query
         required: false
         schema:
           type: integer
+
+      # A brief summary of what the GET operation does.
       summary: Returns a list of orders
+
+      # An identifier for the GET operation.
       operationId: getOrders
+
+      # A more detailed description of what this endpoint does.
       description: >
-        A list of orders made by the customer
-        sorted by date. Allows to filter orders
-        by range of dates.
+        A list of orders made by the customer sorted by date. Allows to filter orders by range of dates.
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '200':
+        # The "200" response returns a JSON array of orders.
+        "200":
           description: A JSON array of orders
+
+          # The content type of the response.
           content:
             application/json:
               schema:
                 type: object
                 additionalProperties: false
+
+                # The `orders` property contains an array of the retrieved orders.
                 properties:
                   orders:
                     type: array
+
+                    # The `$ref` keyword is used to reference an external schema from the `components` section.
                     items:
-                      $ref: '#/components/schemas/GetOrderSchema'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+                      $ref: "#/components/schemas/GetOrderSchema"
 
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+    # The `post` method allows you to create a new order.
     post:
+      # A brief summary of what the POST operation does.
       summary: Creates an order
+
+      # An identifier for the POST operation.
       operationId: createOrder
+
+      # Defines the expected request body.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrderSchema'
+              $ref: "#/components/schemas/CreateOrderSchema"
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '201':
+        # The "201" response returns a JSON representation of the created order.
+        "201":
           description: A JSON representation of the created order
+
+          # The content type of the response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetOrderSchema'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+                $ref: "#/components/schemas/GetOrderSchema"
 
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  # The `/orders/{order_id}` endpoint allows to manage order-specific functionality.
   /orders/{order_id}:
+    # The `parameters` section describes the parameters that can be used in this endpoint.
     parameters:
-      - in: path
-        name: order_id
-        required: true
-        schema:
-          type: string
-          format: uuid
+    # The `order_id` parameter is required and is used to identify the specific order.
+    - in: path
+      name: order_id
+      required: true
+
+      # The `schema` keyword is used to describe the data type and format of the parameter value.
+      schema:
+        type: string
+
+        # For better specificity, we use format "uuid" indicating that it should be a UUID v4.
+        format: uuid
+
+    # The `get` method allows you to retrieve the details of a specific order.
     get:
+      # A brief summary of what the GET operation does.
       summary: Returns the details of a specific order
+
+      # An identifier for the GET operation.
       operationId: getOrder
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '200':
+        # The "200" response returns a JSON representation of the order details.
+        "200":
           description: OK
+
+          # The content type of the response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetOrderSchema'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+                $ref: "#/components/schemas/GetOrderSchema"
 
+        # The "404" response occurs when the requested resource was not found.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+    # The `put` method allows you to replace an existing order.
     put:
+      # A brief summary of what the PUT operation does.
       summary: Replaces an existing order
+
+      # An identifier for the PUT operation.
       operationId: updateOrder
+
+      # Defines the expected request body.
       requestBody:
         required: true
+
+        # The content type of the request body.
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateOrderSchema'
+              $ref: "#/components/schemas/CreateOrderSchema"
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '200':
+        # The "200" response returns a JSON representation of the updated order.
+        "200":
           description: OK
+
+          # The content type of the response.
           content:
             application/json:
               schema:
-                $ref:  '#/components/schemas/GetOrderSchema'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+                $ref: "#/components/schemas/GetOrderSchema"
 
+        # The "404" response occurs when the requested resource was not found.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+    # The `delete` method allows you to delete an existing order.
     delete:
+      # A brief summary of what the DELETE operation does.
       summary: Deletes an existing order
+
+      # An identifier for the DELETE operation.
       operationId: deleteOrder
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '204':
+        # The "204" response indicates that the resource has been deleted successfully.
+        "204":
           description: The resource was deleted successfully
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
 
+        # The "404" response occurs when the requested resource was not found.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  # The `/orders/{order_id}/pay` endpoint allows to manage payment for an order.
   /orders/{order_id}/pay:
+    # The `parameters` section describes the parameters that can be used in this endpoint.
     parameters:
-      - in: path
-        name: order_id
-        required: true
-        schema:
-          type: string
-          format: uuid
+    # The `order_id` parameter is required and is used to identify the specific order.
+    - in: path
+      name: order_id
+      required: true
+
+      # The `schema` keyword is used to describe the data type and format of the parameter value.
+      schema:
+        type: string
+
+        # For better specificity, we use format "uuid" indicating that it should be a UUID v4.
+        format: uuid
+
+    # The `post` method allows you to process a payment for an order.
     post:
+      # A brief summary of what the POST operation does.
       summary: Processes payment for an order
+
+      # An identifier for the POST operation.
       operationId: payOrder
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '200':
+        # The "200" response returns a JSON representation of the order details after the payment has been processed.
+        "200":
           description: OK
+
+          # The content type of the response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetOrderSchema'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+                $ref: "#/components/schemas/GetOrderSchema"
 
+        # The "404" response occurs when the requested resource was not found.
+        "404":
+          $ref: "#/components/responses/NotFound"
 
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+  # The `/orders/{order_id}/cancel` endpoint allows to manage cancellation of an order.
   /orders/{order_id}/cancel:
+    # The `parameters` section describes the parameters that can be used in this endpoint.
     parameters:
-      - in: path
-        name: order_id
-        required: true
-        schema:
-          type: string
-          format: uuid
+    # The `order_id` parameter is required and is used to identify the specific order.
+    - in: path
+      name: order_id
+      required: true
+
+      # The `schema` keyword is used to describe the data type and format of the parameter value.
+      schema:
+        type: string
+
+        # For better specificity, we use format "uuid" indicating that it should be a UUID v4.
+        format: uuid
+
+    # The `post` method allows you to cancel an existing order.
     post:
+      # A brief summary of what the POST operation does.
       summary: Cancels an order
+
+      # An identifier for the POST operation.
       operationId: cancelOrder
+
+      # Defines the possible HTTP responses that the endpoint can return.
       responses:
-        '200':
+        # The "200" response returns a JSON representation of the cancelled order details.
+        "200":
           description: OK
+
+          # The content type of the response.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetOrderSchema'
-        '404':
-          $ref: '#/components/responses/NotFound'
-        '422':
-          $ref: '#/components/responses/UnprocessableEntity'
+                $ref: "#/components/schemas/GetOrderSchema"
 
+        # The "404" response occurs when the requested resource was not found.
+        "404":
+          $ref: "#/components/responses/NotFound"
+
+        # The "422" response occurs when the request is unprocessable due to invalid input.
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+
+# This is a YAML file for defining the OpenAPI version 3.0.3 specification.
+
+# The `components` section defines reusable pieces of the API.
 components:
+  # Defines the various HTTP responses that can be returned by the API.
   responses:
+    # The "NotFound" response indicates that the requested resource was not found.
     NotFound:
       description: The specified resource was not found.
+
+      # The content type of the response.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
+
+    # The "UnprocessableEntity" response indicates that the request contains invalid data.
     UnprocessableEntity:
       description: The payload contains invalid values.
+
+      # The content type of the response.
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
 
+  # Defines security schemes that can be used throughout the API.
   securitySchemes:
+    # The "openId" scheme uses the OpenID Connect protocol for authentication.
     openId:
       type: openIdConnect
       openIdConnectUrl: https://coffeemesh-dev.eu.auth0.com/.well-known/openid-configuration
+
+    # The "oauth2" scheme uses the OAuth 2.0 protocol for authentication.
     oauth2:
       type: oauth2
       flows:
         clientCredentials:
           tokenUrl: https://coffeemesh-dev.eu.auth0.com/oauth/token
           scopes: {}
+
+    # The "bearerAuth" scheme uses the JWT (JSON Web Token) format for authentication.
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
+  # Defines the data structures (schemas) that will be used in the API.
   schemas:
+    # The "Error" schema represents an error message.
     Error:
       type: object
       properties:
         detail:
           oneOf:
-            - type: string
-            - type: array
+          - type: string
+          - type: array
       required:
-        - detail
+      - detail
       additionalProperties: false
 
+    # The "OrderItemSchema" schema represents details of a single order item.
     OrderItemSchema:
       additionalProperties: false
       type: object
       required:
-        - product
-        - size
+      - product
+      - size
       properties:
         product:
           type: string
         size:
           type: string
+
+          # The allowed values for the "size" property are "small", "medium" and "big".
           enum:
-            - small
-            - medium
-            - big
+          - small
+          - medium
+          - big
+
+        # The "quantity" property represents the number of items to be ordered (default is 1).
         quantity:
           type: integer
           format: int64
@@ -234,26 +399,28 @@ components:
           minimum: 1
           maximum: 1000000
 
+    # The "CreateOrderSchema" schema represents the data required to create a new order.
     CreateOrderSchema:
       additionalProperties: false
       type: object
       required:
-        - order
+      - order
       properties:
         order:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/OrderItemSchema'
+            $ref: "#/components/schemas/OrderItemSchema"
 
+    # The "GetOrderSchema" schema represents the data returned when retrieving an existing order.
     GetOrderSchema:
       additionalProperties: false
       type: object
       required:
-        - id
-        - created
-        - status
-        - order
+      - id
+      - created
+      - status
+      - order
       properties:
         id:
           type: string
@@ -263,33 +430,41 @@ components:
           format: date-time
         status:
           type: string
+
+          # The allowed values for the "status" property are "created", "paid", "progress", "cancelled", "dispatched" and "delivered".
           enum:
-            - created
-            - paid
-            - progress
-            - cancelled
-            - dispatched
-            - delivered
+          - created
+          - paid
+          - progress
+          - cancelled
+          - dispatched
+          - delivered
+
+        # The "order" property represents an array of order items.
         order:
           type: array
           minItems: 1
           items:
-            $ref: '#/components/schemas/OrderItemSchema'
+            $ref: "#/components/schemas/OrderItemSchema"
 
+  # Defines the security requirements for different endpoints in the API.
 security:
-  - oauth2:
-      - getOrders
-      - createOrder
-      - getOrder
-      - updateOrder
-      - deleteOrder
-      - payOrder
-      - cancelOrder
-  - bearerAuth:
-      - getOrders
-      - createOrder
-      - getOrder
-      - updateOrder
-      - deleteOrder
-      - payOrder
-      - cancelOrder
+# The first item in this list is a reference to the OAuth 2.0 security scheme, indicating that those endpoints require authentication.
+- oauth2:
+  - getOrders
+  - createOrder
+  - getOrder
+  - updateOrder
+  - deleteOrder
+  - payOrder
+  - cancelOrder
+
+# The second item in this list is a reference to the JWT (bearer) security scheme, indicating that those endpoints also require authentication.
+- bearerAuth:
+  - getOrders
+  - createOrder
+  - getOrder
+  - updateOrder
+  - deleteOrder
+  - payOrder
+  - cancelOrder

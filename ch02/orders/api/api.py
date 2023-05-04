@@ -1,3 +1,4 @@
+# Import necessary libraries and modules
 import uuid
 from datetime import datetime
 from uuid import UUID
@@ -13,14 +14,15 @@ from orders.api.schemas import (
     GetOrdersSchema,
 )
 
+# Initialize an empty list to store orders
 orders = []
 
-
+# Define the get_orders route to fetch all orders
 @app.get("/orders", response_model=GetOrdersSchema)
 def get_orders():
     return {"orders": orders}
 
-
+# Define the create_order route to create a new order
 @app.post(
     "/orders",
     status_code=status.HTTP_201_CREATED,
@@ -34,7 +36,7 @@ def create_order(order_details: CreateOrderSchema):
     orders.append(order)
     return order
 
-
+# Define the get_order route to fetch a single order by its ID
 @app.get("/orders/{order_id}", response_model=GetOrderSchema)
 def get_order(order_id: UUID):
     for order in orders:
@@ -42,7 +44,7 @@ def get_order(order_id: UUID):
             return order
     raise HTTPException(status_code=404, detail=f"Order with ID {order_id} not found")
 
-
+# Define the update_order route to update an existing order by its ID
 @app.put("/orders/{order_id}", response_model=GetOrderSchema)
 def update_order(order_id: UUID, order_details: CreateOrderSchema):
     for order in orders:
@@ -51,7 +53,7 @@ def update_order(order_id: UUID, order_details: CreateOrderSchema):
             return order
     raise HTTPException(status_code=404, detail=f"Order with ID {order_id} not found")
 
-
+# Define the delete_order route to delete an existing order by its ID
 @app.delete(
     "/orders/{order_id}",
     status_code=status.HTTP_204_NO_CONTENT,
@@ -64,7 +66,7 @@ def delete_order(order_id: UUID):
             return
     raise HTTPException(status_code=404, detail=f"Order with ID {order_id} not found")
 
-
+# Define the cancel_order route to cancel an existing order by its ID
 @app.post("/orders/{order_id}/cancel", response_model=GetOrderSchema)
 def cancel_order(order_id: UUID):
     for order in orders:
@@ -73,7 +75,7 @@ def cancel_order(order_id: UUID):
             return order
     raise HTTPException(status_code=404, detail=f"Order with ID {order_id} not found")
 
-
+# Define the pay_order route to update the status of an existing order to "progress" by its ID
 @app.post("/orders/{order_id}/pay", response_model=GetOrderSchema)
 def pay_order(order_id: UUID):
     for order in orders:
